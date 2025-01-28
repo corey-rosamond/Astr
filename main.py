@@ -1,9 +1,12 @@
 import tkinter as tk
 from threading import Thread
 from time import sleep
+from playsound import playsound
 from astr_ui import AstrUI
 from stt import AstrSTT
 from tts import AstrTTS
+from handlers.command_handler import CommandHandler
+
 
 class AstrApp:
     def __init__(self):
@@ -15,66 +18,51 @@ class AstrApp:
 
         # Wake word and commands
         self.wake_word = "aster"
-        self.commands = {
-            "what is your name": self.handle_name,
-            "quit": self.handle_quit,
-        }
+        self.is_listening = False
 
-    def handle_name(self):
-        """Respond to the name query."""
-        response = "My name is Aster, your assistant."
-        self.ui.append_transcription(response)
-        self.tts.speak(response)
+        self.start_listening_sound = "assets/start_listening.mp3"
+        self.stop_listening_sound = "assets/stop_listening.mp3"
 
-    def handle_quit(self):
-        """Handle the quit command."""
-        response = "Goodbye!"
-        self.ui.append_transcription(response)
-        self.tts.speak(response)
-        self.root.quit()
+        self.command_handler = CommandHandler(self)
 
-    def process_command(self, text):
-        """Process the user's command after the wake word."""
-        for command, handler in self.commands.items():
-            if command in text.lower():
-                handler()
-                return
-        # Default response for unrecognized commands
-        response = "I'm sorry, I didn't understand that."
-        self.ui.append_transcription(response)
-        self.tts.speak(response)
+    def process_transcription(self):
+        """Process transcription for wake word and commands."""
+        if not self.stt.transcription:
+            return  # No transcription to process
 
-    def listen_for_wake_word(self):
-        """Listen for the wake word and process commands."""
-        self.stt.recorder.listen_in_background(
-            self.stt.source, self.stt.record_callback(self.stt.data_queue),
-            phrase_time_limit=self.stt.record_timeout
-        )
-        self.ui.update_listening_status(True)
+        latest_text = self.stt.transcription[-1].strip().lower()
 
-        while True:
-            try:
-                self.stt.process_transcription()
-                if self.stt.transcription:
-                    latest_text = self.stt.transcription[-1].lower()
-                    if self.wake_word in latest_text:
-                        self.ui.append_transcription("Wake word detected. Listening for command...")
-                        self.tts.speak("I'm listening.")
+        if not self.is_listening and self.wake_word in latest_text:
+            # Wake word detected
+            self.is_listening = True
+            playsound(self.start_listening_sound)
+            self.ui.append_transcription("Wake word detected. Listening for command...")
 
-                        # Process the next command
-                        sleep(1)  # Allow a slight delay before command processing
-                        if len(self.stt.transcription) > 1:
-                            command_text = self.stt.transcription[-1]
-                            self.process_command(command_text)
+        elif self.is_listening:
+            # Process command
+            self.command_handler.execute_command(latest_text)
+            self.is_listening = False
+            playsound(self.stop_listening_sound)
 
-            except KeyboardInterrupt:
-                break
+    def start_stt_thread(self):
+        """Start the STT process in a background thread."""
+
+        def run_stt():
+            self.stt.run()
+
+        stt_thread = Thread(target=run_stt, daemon=True)
+        stt_thread.start()
+
+    def update_ui(self):
+        """Update the UI regularly to process transcriptions."""
+        self.process_transcription()
+        self.root.after(100, self.update_ui)  # Schedule the next UI update
 
     def run(self):
-        """Run the application."""
-        stt_thread = Thread(target=self.listen_for_wake_word, daemon=True)
-        stt_thread.start()
-        self.root.mainloop()
+        """Run the main application."""
+        self.start_stt_thread()  # Start STT in the background
+        self.update_ui()  # Start UI update loop
+        self.root.mainloop()  # Run the main loop in the main thread
 
 
 if __name__ == "__main__":

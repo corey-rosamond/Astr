@@ -68,13 +68,14 @@ Aster/
 3. Implement the `execute` method:
 
 ```python
-from command import Command
+from handlers.command import Command
+
 
 class MyCommand(Command):
-    def execute(self, app, text):
-        response = "This is my custom command."
-        app.ui.append_transcription(response)
-        app.tts.speak(response)
+   def execute(self, app, text):
+      response = "This is my custom command."
+      app.ui.append_transcription(response)
+      app.tts.speak(response)
 ```
 
 4. The command will be loaded automatically when the application starts.

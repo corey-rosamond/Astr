@@ -8,8 +8,10 @@ from queue import Queue
 from time import sleep
 from sys import platform
 
+
 class AstrSTT:
-    def __init__(self, ui, model="medium", non_english=False, energy_threshold=1000, record_timeout=2.0, phrase_timeout=3.0, default_microphone='pulse'):
+    def __init__(self, ui, model="medium", non_english=False, energy_threshold=1000, record_timeout=2.0,
+                 phrase_timeout=3.0, default_microphone='pulse'):
         self.ui = ui
         self.model = model
         self.non_english = non_english
@@ -59,7 +61,8 @@ class AstrSTT:
         low = max(min(lowcut / nyquist, 0.99), 0.01)
         high = max(min(highcut / nyquist, 0.99), 0.01)
         if not (0 < low < high):
-            raise ValueError(f"Invalid bandpass filter frequencies: low={low}, high={high} (normalized). Ensure 0 < low < high < Nyquist.")
+            raise ValueError(
+                f"Invalid bandpass filter frequencies: low={low}, high={high} (normalized). Ensure 0 < low < high < Nyquist.")
         b, a = butter(order, [low, high], btype='band')
         return b, a
 
@@ -78,6 +81,7 @@ class AstrSTT:
         def callback(_, audio: sr.AudioData):
             data = audio.get_raw_data()
             data_queue.put(data)
+
         return callback
 
     def process_transcription(self):
