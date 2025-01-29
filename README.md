@@ -1,55 +1,68 @@
-# Aster - A Local Voice Assistant
+# Astr Voice Assistant
 
-Aster is a local, privacy-first voice assistant designed to work entirely offline. It leverages cutting-edge technologies such as OpenAI Whisper for speech-to-text (STT) and Coqui TTS for text-to-speech (TTS). The application is designed to be modular and extendable, allowing developers to add new commands seamlessly.
-
----
+Astr is a voice assistant application that uses speech-to-text (STT) and text-to-speech (TTS) technologies to interact with users through voice commands.
 
 ## Features
 
-- **Local Operation**: No internet connection required; all operations are performed locally to ensure user privacy.
-- **English-only STT**: Speech recognition is restricted to English for better accuracy.
-- **Command System**: Dynamically loads commands from a `commands/` directory. Each command is a separate file and extends a base `Command` class.
-- **Reminders**: Includes support for time-based reminders and relative reminders (e.g., "Remind me in 10 minutes to drink water").
-- **Customizable Wake Word**: Uses "aster" as the wake word by default.
-- **Interactive GUI**: Built with Tkinter, provides real-time transcription and a visual listening indicator.
+- **Speech Recognition**: Uses Whisper and SpeechRecognition libraries to transcribe spoken words into text.
+- **Text-to-Speech**: Utilizes Coqui TTS for converting text responses into speech.
+- **Command Handling**: Supports a variety of voice commands to perform different actions.
 
----
+## New Commands
 
-## Project Structure
+### Good Morning Command
 
-```
-Aster/
-├── main.py              # Entry point for the application
-├── astr_ui.py           # GUI implementation
-├── stt.py               # Speech-to-text processing
-├── tts.py               # Text-to-speech implementation
-├── command.py           # Base Command class
-├── commands/            # Directory for individual command files
-│   ├── greet_command.py # Example greet command
-│   ├── quit_command.py  # Command to quit the application
-│   ├── reminder_command.py # Handles reminders
-├── requirements.txt     # Dependencies for the project
-├── readme.md            # Documentation
-├── .gitignore           # Ignored files for version control
-```
+- **Keywords**: "good morning"
+- **Description**: Responds with a friendly morning greeting.
+- **Response**: "Good morning! How can I assist you today?"
 
----
+### Good Night Command
 
-## Setup and Installation
+- **Keywords**: "good night"
+- **Description**: Responds with a friendly night farewell.
+- **Response**: "Good night! Sleep well and sweet dreams!"
 
-### Prerequisites
-- Python 3.10 or higher
-- Ubuntu 22.04 or compatible Linux system
+## Existing Commands
 
-### Installation
+### Greet Command
+
+- **Keywords**: "hello", "hi", "greet", "hey"
+- **Description**: Greets the user.
+- **Response**: "Hello! How can I assist you today?"
+
+### Quit Command
+
+- **Keywords**: "quit", "exit", "close", "goodbye"
+- **Description**: Exits the application.
+- **Response**: "Goodbye!"
+
+### Time Command
+
+- **Keywords**: "time", "current time", "what time is it"
+- **Description**: Provides the current time.
+- **Response**: "The current time is [time]."
+
+### Reminder Command
+
+- **Keywords**: "remind", "reminder", "set a reminder"
+- **Description**: Sets a reminder for a specified time.
+- **Response**: "Reminder set for [amount] [unit]."
+
+## How It Works
+
+1. **Initialization**: The application initializes the STT and TTS components and loads all available commands.
+2. **Listening**: The application listens for a wake word ("aster") to start processing commands.
+3. **Command Execution**: Once activated, the application processes the spoken command and executes the corresponding action.
+
+## Installation
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/aster.git
-   cd aster
+   git clone https://github.com/yourusername/astr-voice-assistant.git
+   cd astr-voice-assistant
    ```
 
-2. Install Python dependencies:
+2. Install the required dependencies:
    ```bash
    pip install -r requirements.txt
    ```
@@ -59,87 +72,10 @@ Aster/
    python main.py
    ```
 
----
-
-## Adding New Commands
-
-1. Create a new Python file in the `commands/` directory, e.g., `my_command.py`.
-2. Extend the `Command` class from `command.py`.
-3. Implement the `execute` method:
-
-```python
-from handlers.command import Command
-
-
-class MyCommand(Command):
-   def execute(self, app, text):
-      response = "This is my custom command."
-      app.ui.append_transcription(response)
-      app.tts.speak(response)
-```
-
-4. The command will be loaded automatically when the application starts.
-
----
-
-## Key Dependencies
-
-- [OpenAI Whisper](https://github.com/openai/whisper): Speech-to-text engine
-- [Coqui TTS](https://github.com/coqui-ai/TTS): Text-to-speech engine
-- [Tkinter](https://docs.python.org/3/library/tk.html): GUI framework
-
----
-
-## .gitignore
-
-The following `.gitignore` file is included to exclude unnecessary files from version control:
-
-```
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-build/
-dist/
-*.egg-info/
-.eggs/
-
-# PyCharm project files
-.idea/
-*.iml
-
-# Virtual environments
-venv/
-
-# Logs
-*.log
-
-# OS files
-.DS_Store
-Thumbs.db
-```
-
----
-
-## Future Enhancements
-
-- Add multi-language support.
-- Implement additional commands (e.g., weather updates, task management).
-- Improve TTS voices for more natural sound.
-- Enhance the GUI for better user interaction.
-
----
-
 ## Contributing
-Contributions are welcome! Please fork the repository and submit a pull request with your changes.
 
----
+Contributions are welcome! Please feel free to submit a pull request or open an issue.
 
 ## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+
+This project is licensed under the MIT License.
